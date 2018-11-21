@@ -8,10 +8,15 @@ import java.util.List;
 public class CSVFileReader 
 {
 	private final List<TrainingExample> trainingExamples;
-	private int dimensionality = -1;
+	private int numberOfAttributes = -1;
+	private final List<ArrayList<String>> listOfAttributesAndPossibleValues;
+	private final List<String> possibleClassValues;
 	
 	public CSVFileReader(String fileLocation)
 	{
+		trainingExamples = new ArrayList<TrainingExample>();
+		listOfAttributesAndPossibleValues = new ArrayList<ArrayList<String>>();
+		possibleClassValues = new ArrayList<String>();
 		BufferedReader reader = null;
 		String splitBy = ",";
 		
@@ -23,31 +28,81 @@ public class CSVFileReader
             {
                 // use comma as separator
                 String[] example = line.split(splitBy);
-                if(dimensionality == -1)		// For initializing only once
+                if(numberOfAttributes == -1)		// For initializing only once
                 {
-                    dimensionality = example.length - 1;
+                	numberOfAttributes = example.length - 1;
+                	
+                	for(int i = 1; i <= numberOfAttributes; i++)
+                	{
+                		listOfAttributesAndPossibleValues.add(new ArrayList<String>());
+                	}
+                }
+                addAttributeValues(example);
+                
+                // Add class value if it is not present in possibleClassValues
+                boolean doesPresent = possibleClassValues.contains(example[numberOfAttributes]);
+                if(!doesPresent)
+                {
+                	possibleClassValues.add(example[numberOfAttributes]);
                 }
                 
-                double xValues[] = new double[dimensionality];
-                for(int i = 0; i < dimensionality; i++)
-                {
-                	xValues[i] = Double.parseDouble(example[i]);
-                }
-                double targetFunctionValue = Double.parseDouble(example[example.length - 1]);
-                TrainingExample trainingExample = new TrainingExample(xValues, targetFunctionValue);
+                TrainingExample trainingExample = new TrainingExample(example);
                 trainingExamples.add(trainingExample);
             }
 		}
 		catch(Exception e)
 		{
-			dimensionality = 0;
+			numberOfAttributes = 0;
 			e.printStackTrace();
 		}
 	}
 	
-	public int dimensionalityOfData()
+	/**
+	 * This function takes a line(including class value) and checks whether attribute value present in line is also present
+	 *  in "listOfAttributesAndPossibleValues" variable. If it is not present it will add that value to respective attribute
+	 *   list else it will do nothing.
+	 * @param line
+	 */
+	private void addAttributeValues(String[] line)
 	{
-		return dimensionality;
+		int numOfAttributes = line.length - 1;
+		
+		for(int i = 0; i < numOfAttributes; i++)
+		{
+			boolean doesValueContains = listOfAttributesAndPossibleValues.get(i).contains(line[i]);
+			if(!doesValueContains)
+			{
+				listOfAttributesAndPossibleValues.get(i).add(line[i]);
+			}
+		}
+	}
+	
+	public String[] getPossibleAttributeValues(int atColumnIndex)
+	{
+		String[] result = null;
+		if(atColumnIndex >=0 && atColumnIndex < listOfAttributesAndPossibleValues.size())
+		{
+			int numberOfValues = listOfAttributesAndPossibleValues.get(atColumnIndex).size();
+			result = new String[numberOfValues];
+			return listOfAttributesAndPossibleValues.get(atColumnIndex).toArray(result);
+		}
+		return result;
+	}
+	
+	public String[] getAllPossibleClassValues()
+	{
+		String[] result = new String[possibleClassValues.size()];
+		return possibleClassValues.toArray(result);
+	}
+	
+	public List<ArrayList<String>> getAllPossibleAttributesAndValues()
+	{
+		return listOfAttributesAndPossibleValues;
+	}
+	
+	public int getNumberOfAttributes()
+	{
+		return numberOfAttributes;
 	}
 	
 	public TrainingExample[] getTrainingExamples()
