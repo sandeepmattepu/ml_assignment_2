@@ -1,5 +1,6 @@
 .metadata
 bin/
+Output/
 tmp/
 *.tmp
 *.bak
