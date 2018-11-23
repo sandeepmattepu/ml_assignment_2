@@ -25,7 +25,7 @@ public class TreeToXMLParser
 	private TransformerFactory transformFactory;
 	private Transformer transformer;
 	
-	public TreeToXMLParser(TreePart rootNode, double entropy) throws Exception
+	public TreeToXMLParser(TreePart rootNode) throws Exception
 	{
 		documentFactory = DocumentBuilderFactory.newInstance();
 		documentBuilder = documentFactory.newDocumentBuilder();
@@ -37,6 +37,7 @@ public class TreeToXMLParser
 		Element rootElement = document.createElement("tree");
 		document.appendChild(rootElement);
 		Attr entropyAttribute = document.createAttribute("entropy");
+		double entropy = rootNode.getEntropyAtThisPart();
 		entropyAttribute.setValue(Double.toString(entropy));
 		rootElement.setAttributeNode(entropyAttribute);
 		
@@ -103,7 +104,7 @@ public class TreeToXMLParser
 			{
 				Element newElement = doc.createElement("node");
 				Attr entropyAttribute = doc.createAttribute("entropy");
-				String entropyValue = Double.toString(treePart.getEntropyAtThisPart());
+				String entropyValue = Double.toString(node.getEntropyValueAt(i));
 		        entropyAttribute.setValue(entropyValue);
 		        Attr featureAttribute = doc.createAttribute("feature");
 		        featureAttribute.setValue(treePart.getNameOfPart());

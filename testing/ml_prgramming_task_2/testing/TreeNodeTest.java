@@ -19,6 +19,9 @@ public class TreeNodeTest
 	private TreeNode lowNode;
 	private TreeNode medNode;
 	private TreeNode highNode;
+	private double entropyAtLowNode = 0.45;
+	private double entropyAtMedNode = 0.34;
+	private double entropyAtHighNode = 0.98;
 	
 	@Before
 	public void setUp() throws Exception 
@@ -38,6 +41,10 @@ public class TreeNodeTest
 		node.setTreePartAt("low", lowNode);
 		node.setTreePartAt("medium", medNode);
 		node.setTreePartAt(2, highNode);
+		
+		node.setEntropyAt(0, entropyAtLowNode);
+		node.setEntropyAt(1, entropyAtMedNode);
+		node.setEntropyAt("high", entropyAtHighNode);
 	}
 
 	@Test
@@ -82,6 +89,22 @@ public class TreeNodeTest
 	public void testGetNameOfPart() 
 	{
 		assertTrue(node.getNameOfPart().equals(treePartName));
+	}
+	
+	@Test
+	public void testGetEntropyValueAtInt()
+	{
+		assertEquals(entropyAtLowNode, node.getEntropyValueAt(0), 0.0001);
+		assertEquals(entropyAtMedNode, node.getEntropyValueAt(1), 0.0001);
+		assertEquals(entropyAtHighNode, node.getEntropyValueAt(2), 0.0001);
+	}
+	
+	@Test
+	public void testGetEntropyValueAtString()
+	{
+		assertEquals(entropyAtLowNode, node.getEntropyValueAt("low"), 0.0001);
+		assertEquals(entropyAtMedNode, node.getEntropyValueAt("medium"), 0.0001);
+		assertEquals(entropyAtHighNode, node.getEntropyValueAt("high"), 0.0001);
 	}
 
 }
