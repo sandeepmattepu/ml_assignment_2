@@ -3,7 +3,9 @@ package ml_prgramming_task_2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CSVFileReader 
 {
@@ -109,6 +111,21 @@ public class CSVFileReader
 	{
 		TrainingExample result[] = new TrainingExample[trainingExamples.size()];
 		result = trainingExamples.toArray(result);
+		return result;
+	}
+	
+	public Map<String, String[]> getAttributeAndItsPossibleValues()
+	{
+		Map<String, String[]> result = new HashMap<String, String[]>();
+		
+		for(int i = 0; i < listOfAttributesAndPossibleValues.size(); i++)
+		{
+			String[] temp = new String[listOfAttributesAndPossibleValues.get(i).size()];
+			String[] possibleValues = listOfAttributesAndPossibleValues.get(i).toArray(temp);
+			String key = "att" + Integer.toString(i);
+			result.put(key, possibleValues);
+		}
+			
 		return result;
 	}
 }
