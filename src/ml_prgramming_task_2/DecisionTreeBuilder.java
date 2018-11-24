@@ -30,7 +30,7 @@ public class DecisionTreeBuilder
 		}
 	}
 	
-	public double calculateEntropy(TrainingExample[] trainingExamples)
+	private double calculateEntropy(TrainingExample[] trainingExamples)
 	{
 		double result = 0;
 		
@@ -68,13 +68,13 @@ public class DecisionTreeBuilder
 	}
 	
 	
-	public double calculateInformationGain(TrainingExample[] trainingExamples, int attributeColumnIndex)
+	private double calculateInformationGain(TrainingExample[] trainingExamples, int attributeColumnIndex)
 	{
 		String nameOfColumn = columnNameWithColumnIndex(attributeColumnIndex);
 		return calculateInformationGain(trainingExamples, nameOfColumn);
 	}
 	
-	public double calculateInformationGain(TrainingExample[] trainingExamples, String attributeColumnName)
+	private double calculateInformationGain(TrainingExample[] trainingExamples, String attributeColumnName)
 	{
 		double result = 0;
 		double entropyOfGivenSet = calculateEntropy(trainingExamples);
@@ -115,7 +115,7 @@ public class DecisionTreeBuilder
 	/**
 	 * @param filterValues It contains column index as keys and its respective attribute values to be filtered
 	 */
-	public TrainingExample[] filterTrainingExample(TrainingExample[] examples, Map<Integer, String> filterValues)
+	private TrainingExample[] filterTrainingExample(TrainingExample[] examples, Map<Integer, String> filterValues)
 	{
 		List<TrainingExample> result = new ArrayList<TrainingExample>();
 		for(int i = 0; i < examples.length; i++)
@@ -142,14 +142,55 @@ public class DecisionTreeBuilder
 		return result.toArray(temp);
 	}
 	
-	public TrainingExample[] filterTrainingExample(TrainingExample[] examples, int attributeColumnIndex, String value)
+	private TrainingExample[] filterTrainingExample(TrainingExample[] examples, int attributeColumnIndex, String value)
 	{
 		Map<Integer, String> filter = new HashMap<Integer, String>();
 		filter.put(attributeColumnIndex, value);
 		return filterTrainingExample(examples, filter);
 	}
 	
+	private String findBestAttribute(List<String> fromAttributes, TrainingExample[] trainingExamples)
+	{
+		String result = null;
+		List<Double> informationGainOfAttributes = new ArrayList<Double>();
+		
+		// Calculate information gain for each attribute
+		for(int i = 0; i < fromAttributes.size(); i++)
+		{
+			double informationGain = calculateInformationGain(trainingExamples, fromAttributes.get(i));
+			informationGainOfAttributes.add(informationGain);
+		}
+		
+		// Compare and find attribute with highest information gain
+		int indexOfBestAttribute = -1;
+		double highestInformationGain = 0;
+		for(int i = 0; i < informationGainOfAttributes.size(); i++)
+		{
+			if(indexOfBestAttribute == -1 || highestInformationGain < informationGainOfAttributes.get(i))
+			{
+				indexOfBestAttribute = i;
+				highestInformationGain = informationGainOfAttributes.get(i);
+			}
+		}
+		
+		result = fromAttributes.get(indexOfBestAttribute);
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @return Root tree part(node or leaf) of the tree
+	 */
 	public TreePart buildDecisionTree()
+	{
+		TreePart result = null;
+		List<String> attributes = new ArrayList<String>();
+		attributes.addAll(attributeAndItsValues.keySet());
+		result = performID3Algorithm(trainingExamples, attributes);
+		return result;
+	}
+	
+	private TreePart performID3Algorithm(TrainingExample[] trainingExamples, List<String> attributesToChoose)
 	{
 		TreePart result = null;
 		return result;
