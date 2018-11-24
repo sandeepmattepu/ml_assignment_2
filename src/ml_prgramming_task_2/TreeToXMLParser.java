@@ -47,17 +47,17 @@ public class TreeToXMLParser
 	
 	public String toString()
 	{
-		return toString(isXMLDeclarationIncluded);
+		return toString(!isXMLDeclarationIncluded);
 	}
 	
 	/**
-	 * @param withXMLDeclaration When true the outpult will have xml declaration
+	 * @param removeXMLDeclaration When true the outpult will not have xml declaration
 	 * 								(<?xml version="1.0" encoding="UTF-8" standalone="no"?>)
 	 */
-	public String toString(boolean withXMLDeclaration)
+	public String toString(boolean removeXMLDeclaration)
 	{
 		String resultString = null;
-		String isDeclarationIncluded = withXMLDeclaration ? "yes" : "no";
+		String isDeclarationIncluded = removeXMLDeclaration ? "yes" : "no";
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, isDeclarationIncluded);
 		StringWriter writer = new StringWriter();
 		StreamResult result = new StreamResult(writer);
@@ -74,18 +74,19 @@ public class TreeToXMLParser
 		return resultString;
 	}
 	
-	public void saveAtLocation(String fileName, boolean withXMLDeclaration) throws Exception
+	public void saveAtLocation(String fileName, boolean removeXMLDeclaration) throws Exception
 	{
-		String isDeclarationIncluded = withXMLDeclaration ? "yes" : "no";
+		String isDeclarationIncluded = removeXMLDeclaration ? "yes" : "no";
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, isDeclarationIncluded);
 		DOMSource source = new DOMSource(document);
         StreamResult result = new StreamResult(new File(fileName));
         transformer.transform(source, result);
+        System.out.println("Output file produced at " + fileName);
 	}
 	
 	public void saveAtLocation(String fileName) throws Exception
 	{
-		saveAtLocation(fileName, isXMLDeclarationIncluded);
+		saveAtLocation(fileName, !isXMLDeclarationIncluded);
 	}
 	
 	public void includeXMLDeclaration(boolean included)

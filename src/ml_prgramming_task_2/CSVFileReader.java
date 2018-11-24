@@ -25,7 +25,7 @@ public class CSVFileReader
 		{
 			reader = new BufferedReader(new FileReader(fileLocation));
 			String line = "";
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.readLine()) != null && !line.isEmpty())
             {
                 // use comma as separator
                 String[] example = line.split(splitBy);

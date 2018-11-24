@@ -67,13 +67,6 @@ public class DecisionTreeBuilder
 		return result;
 	}
 	
-	
-	private double calculateInformationGain(TrainingExample[] trainingExamples, int attributeColumnIndex)
-	{
-		String nameOfColumn = columnNameWithColumnIndex(attributeColumnIndex);
-		return calculateInformationGain(trainingExamples, nameOfColumn);
-	}
-	
 	private double calculateInformationGain(TrainingExample[] trainingExamples, String attributeColumnName)
 	{
 		double result = 0;
@@ -92,21 +85,6 @@ public class DecisionTreeBuilder
 				double entropyAtThisValue = calculateEntropy(filteredExamples);
 				double portionOfExamples = (double)filteredExamples.length/(double)trainingExamples.length;
 				result -= (portionOfExamples * entropyAtThisValue);
-			}
-		}
-		return result;
-	}
-	
-	private String columnNameWithColumnIndex(int indexOfColumn)
-	{
-		String result = null;
-		for(String key : columnNameAndColumnIndex.keySet())
-		{
-			int index = columnNameAndColumnIndex.get(key);
-			if(index == indexOfColumn)
-			{
-				result = key;
-				break;
 			}
 		}
 		return result;

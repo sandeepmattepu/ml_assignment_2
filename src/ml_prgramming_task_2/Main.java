@@ -24,8 +24,7 @@ public class Main
 			try 
 			{
 				TreeToXMLParser parser = new TreeToXMLParser(rootNode);
-				String result = parser.toString(false);
-				System.out.println(result);
+				parser.saveAtLocation(args[1], true);
 			} 
 			catch (Exception e) 
 			{
