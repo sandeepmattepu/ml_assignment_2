@@ -3,9 +3,8 @@ package ml_prgramming_task_2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CSVFileReader 
 {
@@ -114,9 +113,9 @@ public class CSVFileReader
 		return result;
 	}
 	
-	public Map<String, String[]> getAttributeAndItsPossibleValues()
+	public LinkedHashMap<String, String[]> getAttributeAndItsPossibleValues()
 	{
-		Map<String, String[]> result = new HashMap<String, String[]>();
+		LinkedHashMap<String, String[]> result = new LinkedHashMap<String, String[]>();
 		
 		for(int i = 0; i < listOfAttributesAndPossibleValues.size(); i++)
 		{
