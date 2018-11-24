@@ -193,6 +193,97 @@ public class DecisionTreeBuilder
 	private TreePart performID3Algorithm(TrainingExample[] trainingExamples, List<String> attributesToChoose)
 	{
 		TreePart result = null;
+		double entropyOfExamples = calculateEntropy(trainingExamples);
+		
+		if(entropyOfExamples == 0)		// Build leaf when entropy is zero
+		{
+			String classValue = trainingExamples[0].getActualClassValue();
+			TreeLeaf leaf = new TreeLeaf(0, classValue);
+			return leaf;
+		}
+		else			// Build node when entropy is not zero
+		{
+			String bestAttributeName = findBestAttribute(attributesToChoose, trainingExamples);
+			int columnIndexOfBestAttribute = columnNameAndColumnIndex.get(bestAttributeName);
+			String[] allValuesOfBestAttribute = attributeAndItsValues.get(bestAttributeName);
+			
+			// Filter training examples based on best attribute values
+			List<TrainingExample[]> filteredExamples = new ArrayList<TrainingExample[]>();
+			for(int i = 0; i < allValuesOfBestAttribute.length; i ++)
+			{
+				String attributeValue = allValuesOfBestAttribute[i];
+				TrainingExample[] examplesForThisValue = filterTrainingExample(trainingExamples, 
+															columnIndexOfBestAttribute, attributeValue);
+				filteredExamples.add(examplesForThisValue);
+			}
+			
+			TreeNode node = new TreeNode(entropyOfExamples, bestAttributeName, allValuesOfBestAttribute);
+			// Assign further nodes or leaves to this node through ID3
+			for(int i = 0; i < filteredExamples.size(); i++)
+			{
+				if(filteredExamples.size() == 0)	 // When no training examples are there assign most common class value
+				{
+					String mostCommonClassValue = findMostCommonClassValue(trainingExamples);
+					TreeLeaf leaf = new TreeLeaf(0, mostCommonClassValue);
+					node.setTreePartAt(allValuesOfBestAttribute[i], leaf);
+					node.setEntropyAt(allValuesOfBestAttribute[i], 0);
+				}
+				else
+				{
+					double entropyAtFilteredExamples = calculateEntropy(filteredExamples.get(i));
+					node.setEntropyAt(allValuesOfBestAttribute[i], entropyAtFilteredExamples);
+					// Prepare new attribute list except selected best attribute
+					List<String> newAttributes = new ArrayList<String>();
+					for(int j = 0; j < attributesToChoose.size(); j++)
+					{
+						if(!attributesToChoose.get(j).equals(bestAttributeName))
+						{
+							newAttributes.add(attributesToChoose.get(j));
+						}
+					}
+					TreePart newChild = performID3Algorithm(filteredExamples.get(i), newAttributes);
+					node.setTreePartAt(allValuesOfBestAttribute[i], newChild);
+				}
+			}
+			result = node;
+		}
+		return result;
+	}
+	
+	private String findMostCommonClassValue(TrainingExample[] trainingExamples)
+	{
+		String result = null;
+		
+		// Counting each class value
+		List<Integer> countOfEachClassValue = new ArrayList<Integer>();
+		for(int i = 0; i < allPossibleClassValues.length; i++)
+		{
+			String classValue = allPossibleClassValues[i];
+			int count = 0;
+			for(int j = 0; j < trainingExamples.length; j++)
+			{
+				String actualClassValue = trainingExamples[i].getActualClassValue();
+				boolean isSimilar = classValue.equals(actualClassValue);
+				if(isSimilar)
+				{
+					count += 1;
+				}
+			}
+			countOfEachClassValue.add(count);
+		}
+		
+		// Finding most common class in the count
+		int mostCount = 0;
+		int indexOfMostCount = -1;
+		for(int i = 0; i < countOfEachClassValue.size(); i++)
+		{
+			if(indexOfMostCount == -1 || mostCount < countOfEachClassValue.get(i))
+			{
+				mostCount = countOfEachClassValue.get(i);
+				indexOfMostCount = i;
+			}
+		}
+		result = allPossibleClassValues[indexOfMostCount];
 		return result;
 	}
 }
