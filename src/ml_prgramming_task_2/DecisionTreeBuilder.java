@@ -28,22 +28,21 @@ public class DecisionTreeBuilder
 			columnNameAndColumnIndex.put(key, i);
 			i++;
 		}
-		System.out.println(columnNameAndColumnIndex);
 	}
 	
-	public double calculateEntropy(TrainingExample[] trainingExamples, String[] AllClassValues)
+	public double calculateEntropy(TrainingExample[] trainingExamples)
 	{
 		double result = 0;
 		
 		// List contains class count in the order of AllClassValues's values
 		List<Integer> eachClassCount = new ArrayList<Integer>();
-		for(int i = 0; i < AllClassValues.length; i++)
+		for(int i = 0; i < allPossibleClassValues.length; i++)
 		{
 			int count = 0;
 			for(int j = 0; j < trainingExamples.length; j++)
 			{
 				String actualClassValue = trainingExamples[j].getActualClassValue();
-				boolean similar = AllClassValues[i].equals(actualClassValue);
+				boolean similar = allPossibleClassValues[i].equals(actualClassValue);
 				if(similar)
 				{
 					count += 1;
@@ -69,12 +68,44 @@ public class DecisionTreeBuilder
 	}
 	
 	
-	public double calculateInformationGain(TrainingExample[] trainingExamples, int attributeColumnIndex, 
-						String[] allPossibleAttributeValues, String[] allClassValues)
+	public double calculateInformationGain(TrainingExample[] trainingExamples, int attributeColumnIndex)
+	{
+		String nameOfColumn = columnNameWithColumnIndex(attributeColumnIndex);
+		return calculateInformationGain(trainingExamples, nameOfColumn);
+	}
+	
+	public double calculateInformationGain(TrainingExample[] trainingExamples, String attributeColumnName)
 	{
 		double result = 0;
-		double entropyOfGivenSet = calculateEntropy(trainingExamples, allClassValues);
+		double entropyOfGivenSet = calculateEntropy(trainingExamples);
+		result = entropyOfGivenSet;
+		String[] allPossibleAttributeValues = attributeAndItsValues.get(attributeColumnName);
+		int indexOfAttributeColumn = columnNameAndColumnIndex.get(attributeColumnName);
 		
+		// Finding entropy at each attribute value
+		for(int i = 0; i < allPossibleAttributeValues.length; i++)
+		{
+			TrainingExample[] filteredExamples = filterTrainingExample(trainingExamples, indexOfAttributeColumn, 
+													allPossibleAttributeValues[i]);
+			double entropyAtThisValue = calculateEntropy(filteredExamples);
+			double portionOfExamples = (double)filteredExamples.length/(double)trainingExamples.length;
+			result -= (portionOfExamples * entropyAtThisValue);
+		}
+		return result;
+	}
+	
+	private String columnNameWithColumnIndex(int indexOfColumn)
+	{
+		String result = null;
+		for(String key : columnNameAndColumnIndex.keySet())
+		{
+			int index = columnNameAndColumnIndex.get(key);
+			if(index == indexOfColumn)
+			{
+				result = key;
+				break;
+			}
+		}
 		return result;
 	}
 	
@@ -113,5 +144,11 @@ public class DecisionTreeBuilder
 		Map<Integer, String> filter = new HashMap<Integer, String>();
 		filter.put(attributeColumnIndex, value);
 		return filterTrainingExample(examples, filter);
+	}
+	
+	public TreePart buildDecisionTree()
+	{
+		TreePart result = null;
+		return result;
 	}
 }
