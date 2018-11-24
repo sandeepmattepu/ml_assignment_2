@@ -60,7 +60,7 @@ public class DecisionTreeBuilder
 			double portionOfClasses = numberOfExamplesWithClass/totalNumberOfExamples;
 			if(numberOfExamplesWithClass != 0)
 			{
-				double logOfPortion = Math.log(portionOfClasses)/Math.log(2);
+				double logOfPortion = Math.log(portionOfClasses)/Math.log(allPossibleClassValues.length);
 				result -= (portionOfClasses * logOfPortion);
 			}
 		}
@@ -87,9 +87,12 @@ public class DecisionTreeBuilder
 		{
 			TrainingExample[] filteredExamples = filterTrainingExample(trainingExamples, indexOfAttributeColumn, 
 													allPossibleAttributeValues[i]);
-			double entropyAtThisValue = calculateEntropy(filteredExamples);
-			double portionOfExamples = (double)filteredExamples.length/(double)trainingExamples.length;
-			result -= (portionOfExamples * entropyAtThisValue);
+			if(filteredExamples.length != 0)
+			{
+				double entropyAtThisValue = calculateEntropy(filteredExamples);
+				double portionOfExamples = (double)filteredExamples.length/(double)trainingExamples.length;
+				result -= (portionOfExamples * entropyAtThisValue);
+			}
 		}
 		return result;
 	}
