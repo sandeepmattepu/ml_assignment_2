@@ -1,0 +1,4 @@
+apply plugin : 'application'
+
+sourceSets.main.java.srcDirs = ['src']
+mainClassName = 'ml_prgramming_task_2.Main'
